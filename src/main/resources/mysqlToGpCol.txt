@@ -1,0 +1,10 @@
+bigint bigint
+text text
+tinyint smallint
+int int
+varchar varchar
+char varchar
+double float8
+smallint smallint
+longtext text
+mediumtext text

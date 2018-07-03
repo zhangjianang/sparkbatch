@@ -1,0 +1,6 @@
+1 bigint
+2 int
+3 smallint
+4 text
+5 varchar
+6 float8

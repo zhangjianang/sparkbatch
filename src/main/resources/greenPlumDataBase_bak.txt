@@ -1,0 +1,2 @@
+gpadmin jdbc:postgresql://54.223.191.187:5432 gpadmin 5725a1975afe0c642703853ef4ea01b7 org.postgresql.Driver
+ingage jdbc:postgresql://10.0.0.25:5432 gpadmin vagrant org.postgresql.Driver

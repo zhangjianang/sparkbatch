@@ -1,0 +1,1 @@
+ingage jdbc:postgresql://192.168.0.196:5432 gpadmin gpadmin org.postgresql.Driver

@@ -1,0 +1,7 @@
+isales_db_isales_001 jdbc:mysql://192.168.0.75:3306 ingage ingage com.mysql.jdbc.Driver
+xsy_behaviors jdbc:mysql://192.168.0.75:3306 ingage ingage com.mysql.jdbc.Driver
+xsy_flow jdbc:mysql://192.168.0.75:3306 ingage ingage com.mysql.jdbc.Driver
+xsy_email jdbc:mysql://192.168.0.75:3306 ingage ingage com.mysql.jdbc.Driver
+xsy_group jdbc:mysql://192.168.0.75:3306 ingage ingage com.mysql.jdbc.Driver
+xsy_feed jdbc:mysql://192.168.0.75:3306 ingage ingage com.mysql.jdbc.Driver
+xsy_twitter jdbc:mysql://192.168.0.75:3306 ingage ingage com.mysql.jdbc.Driver

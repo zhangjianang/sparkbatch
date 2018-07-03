@@ -1,0 +1,2 @@
+a_account=id:int:num,tenant_id:int:num,receive_time:Long:now,account_name:String:randomStr,owner_id:int:num,dim_depart:int:num,phone:String:randomStr,fax:String:randomStr,url:String:randomStr,weibo:String:randomStr,level:int:randomInt_1_5,industry_id:int:randomInt_1_5,high_sea_status:int:randomInt_1_5,ACCOUNT_TYPE:int:randomInt_1_5,PINYIN:String:randomStr
+a_opportunity=id:int:num,tenant_id:int:num,OPPORTUNITY_NAME:String:randomStr,ACCOUNT_ID:int:num,owner_id:int:num,dim_depart:int:num,PINYIN:String:randomStr,STATUS:int:randomInt_1_5,dbc_real_12:double:randomDouble_1_100
