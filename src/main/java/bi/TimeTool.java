@@ -29,7 +29,8 @@ public class TimeTool {
 			calendar.add(Calendar.DATE, -1);    //得到前一天
 			idate = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
 		}
-		return hiveDataBase.append("use prism_").append(idate).toString();
+//		return hiveDataBase.append("use prism_").append(idate).toString();
+		return hiveDataBase.append("use prism_hb").toString();
 	}
 
 	public static String genHdfsUrl(){
