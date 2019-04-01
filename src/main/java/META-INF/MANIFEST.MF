@@ -1,3 +1,3 @@
 Manifest-Version: 1.0
-Main-Class: bi.prism.CategroyCache
+Main-Class: bi.prism.info.Source1Main
 
