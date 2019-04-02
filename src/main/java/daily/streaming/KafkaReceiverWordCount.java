@@ -1,7 +1,9 @@
-package daily;
+package daily.streaming;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.FlatMapFunction;
@@ -10,37 +12,49 @@ import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
 import org.apache.spark.streaming.api.java.JavaPairDStream;
+import org.apache.spark.streaming.api.java.JavaPairReceiverInputDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.streaming.kafka.KafkaUtils;
 
 import scala.Tuple2;
 
 /**
- * 基于HDFS文件的实时wordcount程序
+ * 基于Kafka receiver方式的实时wordcount程序
  * @author Administrator
  *
  */
-public class HDFSWordCount {
+public class KafkaReceiverWordCount {
 
 	public static void main(String[] args) throws InterruptedException {
 		SparkConf conf = new SparkConf()
 				.setMaster("local[2]")
-				.setAppName("HDFSWordCount");  
+				.setAppName("KafkaWordCount");  
 		JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(5));
 		
-		// 首先，使用JavaStreamingContext的textFileStream()方法，针对HDFS目录创建输入数据流
-		JavaDStream<String> lines = jssc.textFileStream("hdfs://192.168.0.191:8020/company_update.csv");
+		// 使用KafkaUtils.createStream()方法，创建针对Kafka的输入数据流
+		Map<String, Integer> topicThreadMap = new HashMap<String, Integer>();
+		topicThreadMap.put("t_test", 1);
 		
-		// 执行wordcount操作
-		JavaDStream<String> words = lines.flatMap(new FlatMapFunction<String, String>() {
+		JavaPairReceiverInputDStream<String, String> lines = KafkaUtils.createStream(
+				jssc, 
+				"192.168.0.190:2181,192.168.0.189:2181,192.168.0.188:2181",
+				"DefaultConsumerGroup", 
+				topicThreadMap);
+		
+		// 然后开发wordcount逻辑
+		JavaDStream<String> words = lines.flatMap(
+				
+				new FlatMapFunction<Tuple2<String,String>, String>() {
 
-			private static final long serialVersionUID = 1L;
+					private static final long serialVersionUID = 1L;
 
-			@Override
-			public Iterator<String> call(String line) throws Exception {
-				return Arrays.asList(line.split(" ")).iterator();
-			}
-			
-		});
+					@Override
+					public Iterator<String> call(Tuple2<String, String> tuple)
+							throws Exception {
+						return Arrays.asList(tuple._2.split(" ")).iterator();
+					}
+					
+				});
 		
 		JavaPairDStream<String, Integer> pairs = words.mapToPair(
 				
@@ -59,7 +73,7 @@ public class HDFSWordCount {
 		JavaPairDStream<String, Integer> wordCounts = pairs.reduceByKey(
 				
 				new Function2<Integer, Integer, Integer>() {
-
+			
 					private static final long serialVersionUID = 1L;
 
 					@Override
@@ -69,7 +83,7 @@ public class HDFSWordCount {
 					
 				});
 		
-		wordCounts.print();
+		wordCounts.print();  
 		
 		jssc.start();
 		jssc.awaitTermination();

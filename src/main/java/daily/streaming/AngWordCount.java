@@ -1,4 +1,4 @@
-package daily;
+package daily.streaming;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.function.FlatMapFunction;
@@ -22,7 +22,7 @@ public class AngWordCount {
                 .setMaster("local[2]")
                 .setAppName("angTry");
         JavaStreamingContext jsc = new JavaStreamingContext(conf, Durations.seconds(5));
-        JavaDStream<String> lines = jsc.textFileStream("");
+        JavaDStream<String> lines = jsc.textFileStream("hdfs://192.168.0.191:8020/");
         JavaDStream<String> words = lines.flatMap(new FlatMapFunction<String, String>() {
             @Override
             public Iterator<String> call(String instr) throws Exception {
