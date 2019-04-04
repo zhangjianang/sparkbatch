@@ -6,12 +6,10 @@ import org.apache.spark.api.java.*;
 import org.apache.spark.api.java.Optional;
 import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.Function;
+import org.apache.spark.api.java.function.PairFlatMapFunction;
 import org.apache.spark.api.java.function.PairFunction;
 import org.apache.spark.streaming.Durations;
-import org.apache.spark.streaming.api.java.JavaDStream;
-import org.apache.spark.streaming.api.java.JavaPairDStream;
-import org.apache.spark.streaming.api.java.JavaPairInputDStream;
-import org.apache.spark.streaming.api.java.JavaStreamingContext;
+import org.apache.spark.streaming.api.java.*;
 import org.apache.spark.streaming.kafka.KafkaUtils;
 import scala.Tuple2;
 
@@ -24,7 +22,7 @@ public class TransfromBlackList {
     public static void main(String[] args) throws InterruptedException {
         SparkConf conf = new SparkConf()
                 .setAppName("AngBlackList")
-                .setMaster("Local[2]");
+                .setMaster("local[2]");
         JavaStreamingContext jsc = new JavaStreamingContext(conf, Durations.seconds(5));
 
         Map<String, String> kafkaParams = new HashMap<String, String>();
@@ -48,24 +46,26 @@ public class TransfromBlackList {
         JavaDStream<String> words = lines.flatMap(new FlatMapFunction<Tuple2<String, String>, String>() {
             @Override
             public Iterator<String> call(Tuple2<String, String> input) throws Exception {
-                return Arrays.asList(input._2.split(" ")).iterator();
+                ArrayList<String> per = new ArrayList<>();
+                per.add(input._2);
+                return per.iterator();
             }
         });
         JavaPairDStream<String,String> pairs = words.mapToPair(new PairFunction<String, String, String>() {
             @Override
             public Tuple2<String, String> call(String s) throws Exception {
-                return new Tuple2<String, String>(s.split(" ")[1],s);
+                return new Tuple2<String, String>(s.split(" ")[0],s);
             }
         });
 
-        pairs.transform(new Function<JavaPairRDD<String, String>, JavaRDD<String>>() {
+        JavaDStream<String> transform = pairs.transform(new Function<JavaPairRDD<String, String>, JavaRDD<String>>() {
             @Override
             public JavaRDD<String> call(JavaPairRDD<String, String> pairs) throws Exception {
                 JavaPairRDD<String, Tuple2<String, Optional<Boolean>>> joinRdd = pairs.leftOuterJoin(blackName);
                 JavaPairRDD<String, Tuple2<String, Optional<Boolean>>> filter = joinRdd.filter(new Function<Tuple2<String, Tuple2<String, Optional<Boolean>>>, Boolean>() {
                     @Override
                     public Boolean call(Tuple2<String, Tuple2<String, Optional<Boolean>>> tuple) throws Exception {
-                        if(tuple._2._2().isPresent() && tuple._2._2.get()){
+                        if (tuple._2._2().isPresent() && tuple._2._2.get()) {
                             return false;
                         }
                         return true;
@@ -80,7 +80,7 @@ public class TransfromBlackList {
                 return validAdsClickLogRDD;
             }
         });
-
+        transform.print();
 
         jsc.start();
         jsc.awaitTermination();
