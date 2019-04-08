@@ -2,6 +2,8 @@ package daily.streaming;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 
 /**
@@ -53,5 +55,11 @@ public class ConnectionPool {
 	public static void returnConnection(Connection conn) {
 		connectionQueue.push(conn);  
 	}
-	
+
+	public static void main(String[] args) throws SQLException {
+		Connection conn = ConnectionPool.getConnection();
+		Statement statement = conn.createStatement();
+		StringBuilder sql = new StringBuilder("insert into wordcount (word,count) values ('we',10)");
+		statement.execute(sql.toString());
+	}
 }

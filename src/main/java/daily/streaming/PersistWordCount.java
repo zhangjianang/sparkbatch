@@ -73,23 +73,32 @@ public class PersistWordCount {
             }
         });
         wordscount.foreachRDD(new VoidFunction<JavaPairRDD<String, Integer>>() {
+
             @Override
             public void call(JavaPairRDD<String, Integer> wordCountsRDD) throws Exception {
                 wordCountsRDD.foreachPartition(new VoidFunction<Iterator<Tuple2<String, Integer>>>() {
+                    private static final long serialVersionUID = 1L;
                     @Override
                     public void call(Iterator<Tuple2<String, Integer>> words) throws Exception {
                         Connection conn = ConnectionPool.getConnection();
-                        Statement statement = conn.createStatement();
-                        StringBuilder sql = new StringBuilder("insert into wordcount (word,count) values ");
+
+//                        StringBuilder sql = new StringBuilder("insert into wordcount (word,count) values ");
+                        Tuple2<String, Integer> wordCount = null;
+
                         while(words.hasNext()){
-                            Tuple2<String, Integer> next = words.next();
-                            sql.append("("+next._1+","+next._2+"),");
+//                            Tuple2<String, Integer> next = words.next();
+//                            sql.append("("+next._1+","+next._2+"),");
+                            wordCount = words.next();
+
+                            String sql = "insert into wordcount(word,count) "
+                                    + "values('" + wordCount._1 + "'," + wordCount._2 + ")";
+
+                            Statement stmt = conn.createStatement();
+                            stmt.executeUpdate(sql);
                         }
-                        if(!",".equals(sql.charAt(sql.length()-1))){
-                            return;
-                        }
-                        sql.deleteCharAt(sql.length()-1);
-                        statement.execute(sql.toString());
+
+//                        sql.deleteCharAt(sql.length()-1);
+//                        statement.executeUpdate(sql.toString());
                         ConnectionPool.returnConnection(conn);
                     }
                 });
