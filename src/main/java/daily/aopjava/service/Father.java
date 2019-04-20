@@ -15,4 +15,9 @@ public class Father implements Person {
     public void sleep(){
         System.out.println("i like sleep");
     }
+
+    public static void main(String[] args) {
+        String str = "6--我们开始";
+        System.out.println(str.replaceFirst("6--",""));
+    }
 }
