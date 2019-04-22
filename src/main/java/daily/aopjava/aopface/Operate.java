@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class Operate {
 
-    @Pointcut("execution( * daily.aopjava.service.Father.sleep(..))")
-    public void pointcut(){};
+//    @Pointcut("execution( * daily.aopjava.service.Father.sayName(..))")
+//    public void pointcut(){};
 
-    @Pointcut("target(daily.aopjava.service.Person+)")
-    public void pointcut1(){};
+    @Pointcut("this(daily.aopjava.service.Person+)")
+    public void pointcut(){};
 
 //    @Around("pointcut()")
 //    public Object aroundAdvice(ProceedingJoinPoint joinPoint) {
@@ -36,7 +36,7 @@ public class Operate {
 //        return null;
 //    }
 
-    @Before("pointcut1()")
+    @Before("pointcut()")
     public void beforeAdvice(){
         System.out.println("i am before");
     }
